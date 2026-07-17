@@ -622,6 +622,27 @@ function Home() {
                   >
                     <div className="bubble-header" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
                       <span className="bubble-label">{assistantName}:</span>
+                      <button 
+                        className="delete-bubble-btn" 
+                        onClick={() => handleDelete(idx - 1)}
+                        title="Delete Message"
+                        style={{
+                          background: "transparent",
+                          border: "none",
+                          cursor: "pointer",
+                          color: "rgba(255, 255, 255, 0.4)",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          padding: "4px",
+                          transition: "color 0.2s ease"
+                        }}
+                      >
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="3 6 5 6 21 6"></polyline>
+                          <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                        </svg>
+                      </button>
                     </div>
                     <p style={{ margin: 0 }}>
                       {renderMessageText(chat.text)}
