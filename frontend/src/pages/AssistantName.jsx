@@ -81,6 +81,30 @@ function AssistantName() {
           onChange={(e) => setAssistantName(e.target.value)}
         />
 
+        <div style={{ marginTop: "15px", display: "flex", flexDirection: "column", gap: "8px", width: "100%" }}>
+          <label style={{ color: "rgba(255, 255, 255, 0.7)", fontSize: "14px", fontWeight: "500", textAlign: "left", paddingLeft: "4px" }}>Assistant Voice Gender</label>
+          <select 
+            className="assistant-input" 
+            value={assistantVoice || "female"}
+            onChange={(e) => setAssistantVoice(e.target.value)}
+            style={{
+              width: "100%",
+              padding: "12px 16px",
+              borderRadius: "8px",
+              background: "rgba(255, 255, 255, 0.05)",
+              border: "1px solid rgba(255, 255, 255, 0.2)",
+              color: "#fff",
+              outline: "none",
+              fontSize: "15px",
+              cursor: "pointer",
+              appearance: "auto"
+            }}
+          >
+            <option value="female" style={{ background: "#181824", color: "#fff" }}>Female (e.g. Zira, Samantha)</option>
+            <option value="male" style={{ background: "#181824", color: "#fff" }}>Male (e.g. David, George)</option>
+          </select>
+        </div>
+
 
 
         <button
