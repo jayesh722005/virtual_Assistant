@@ -96,7 +96,7 @@ export const askAssistant = async (req, res) => {
     }
 
     // Call Gemini API
-    const customPrompt = `${prompt}. Answer in extremely simple, plain, and easy-to-understand language. Keep it conversational and limit your response to exactly 3 lines.`;
+    const customPrompt = `${prompt}. Answer in extremely simple, plain, and easy-to-understand language. Keep it conversational and limit your response to exactly 1 line.`;
     const data = await GeminiResponse(customPrompt);
 
     let answer = "I couldn't fetch an answer right now.";
@@ -139,7 +139,7 @@ export const editChat = async (req, res) => {
     }
 
     // Call Gemini API for the new prompt
-    const customPrompt = `${prompt}. Answer in extremely simple, plain, and easy-to-understand language. Keep it conversational and limit your response to exactly 3 lines.`;
+    const customPrompt = `${prompt}. Answer in extremely simple, plain, and easy-to-understand language. Keep it conversational and limit your response to exactly 1 line.`;
     const data = await GeminiResponse(customPrompt);
 
     let answer = "I couldn't fetch an answer right now.";
