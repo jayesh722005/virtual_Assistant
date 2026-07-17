@@ -33,22 +33,30 @@ function Home() {
   const assistantImg = userdata?.assistantImage || image1;
   const assistantName = userdata?.assistantName || "Virtual Assistant";
 
-  // Parse chat history from DB
-  const chatHistory = userdata?.history ? userdata.history.map(item => {
-    try {
-      return JSON.parse(item);
-    } catch(e) {
-      // Fallback if not stringified JSON
-      return { sender: "user", text: item };
+  const [localChats, setLocalChats] = useState([]);
+
+  // Sync localChats with DB history when userdata changes
+  useEffect(() => {
+    if (userdata?.history) {
+      const history = userdata.history.map(item => {
+        try {
+          return JSON.parse(item);
+        } catch(e) {
+          return { sender: "user", text: item };
+        }
+      });
+      setLocalChats(history);
+    } else {
+      setLocalChats([]);
     }
-  }) : [];
+  }, [userdata?.history]);
 
   // Scroll to bottom of chat
   useEffect(() => {
     if (chatEndRef.current) {
       chatEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [userdata?.history, isResponding]);
+  }, [localChats, isResponding]);
 
   // Greeting on mount
   const hasGreeted = useRef(false);
@@ -163,6 +171,9 @@ function Home() {
     recognition.onresult = async (event) => {
       const speechToText = event.results[0][0].transcript;
 
+      // Add user message to UI instantly
+      setLocalChats(prev => [...prev, { sender: "user", text: speechToText }]);
+
       // Repeat what the user asked
       speakText(speechToText);
 
@@ -172,12 +183,14 @@ function Home() {
         const data = await askAssistant(speechToText);
         if (data && data.answer) {
           // Speak Gemini response and associate it with the correct message index
-          const newIdx = chatHistory.length + 1;
+          const newIdx = localChats.length + 1;
           speakText(data.answer, newIdx);
         }
       } catch (err) {
         console.error(err);
         speakText("Error connecting to the assistant server.");
+        // Append error response to local chat so they see it
+        setLocalChats(prev => [...prev, { sender: "assistant", text: "Error connecting to the assistant server." }]);
       } finally {
         setIsResponding(false);
       }
