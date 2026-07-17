@@ -172,7 +172,37 @@ function Home() {
       const speechToText = event.results[0][0].transcript;
       const lowerText = speechToText.toLowerCase();
 
-      // YouTube Voice Command Handling
+      // 1. Time Command
+      if (lowerText.includes("time")) {
+        const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        speakText(`The current time is ${timeStr}`);
+        return;
+      }
+
+      // 2. Date Command
+      if (lowerText.includes("date") || lowerText.includes("today")) {
+        const dateStr = new Date().toLocaleDateString(undefined, { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        speakText(`Today is ${dateStr}`);
+        return;
+      }
+
+      // 3. Google Search Command
+      if (lowerText.includes("search") && lowerText.includes("google")) {
+        const query = lowerText
+          .replace("please", "")
+          .replace("search", "")
+          .replace("for", "")
+          .replace("on google", "")
+          .replace("google", "")
+          .trim();
+        if (query) {
+          window.open(`https://www.google.com/search?q=${encodeURIComponent(query)}`, "_blank");
+          speakText(`Searching for ${query} on Google.`);
+          return;
+        }
+      }
+
+      // 4. YouTube Voice Command Handling
       if (lowerText.includes("youtube")) {
         let searchUrl = "https://www.youtube.com";
         let speechReply = "Opening YouTube for you.";
@@ -200,6 +230,26 @@ function Home() {
         return;
       }
 
+      // 5. Open websites command
+      const sites = {
+        "google": "https://www.google.com",
+        "facebook": "https://www.facebook.com",
+        "instagram": "https://www.instagram.com",
+        "github": "https://www.github.com",
+        "netflix": "https://www.netflix.com",
+        "chatgpt": "https://chatgpt.com",
+        "gmail": "https://mail.google.com",
+        "maps": "https://maps.google.com"
+      };
+
+      for (const [siteName, url] of Object.entries(sites)) {
+        if (lowerText.includes(`open ${siteName}`) || lowerText.includes(`go to ${siteName}`)) {
+          window.open(url, "_blank");
+          speakText(`Opening ${siteName} for you.`);
+          return;
+        }
+      }
+
       // Call context function to send prompt to Gemini & save in DB history
       setIsResponding(true);
       try {
@@ -218,6 +268,7 @@ function Home() {
         setIsResponding(false);
       }
     };
+
 
     try {
       recognition.start();
