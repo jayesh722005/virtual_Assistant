@@ -607,7 +607,7 @@ function Home() {
           </button>
 
           {/* Interactive Chat Display with Persistent History */}
-          {(chatHistory.length > 0 || isResponding) && (
+          {(chatHistory.some(chat => chat.sender !== 'user' && !chat.text.toLowerCase().startsWith("error") && !chat.text.toLowerCase().includes("failed")) || isResponding) && (
             <div className="chat-display-card" style={{ maxHeight: '350px', overflowY: 'auto' }}>
               {chatHistory.map((chat, idx) => {
                 if (chat.sender === 'user') return null; // Do not show user's question
