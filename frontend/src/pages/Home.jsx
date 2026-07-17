@@ -73,25 +73,29 @@ function Home() {
       const langVoices = voices.filter(v => v.lang.includes("en-US") || v.lang.includes("en-IN") || v.lang.includes("hi-IN"));
       
       const preferredGender = userdata?.assistantVoice || "female";
-      let selectedVoice = null;
       
-      if (preferredGender === "male") {
-        // Find male voice
+      // Select best voice prioritizing Google and high quality natural voices
+      let selectedVoice = langVoices.find(v => {
+        const name = v.name.toLowerCase();
+        if (preferredGender === "male") {
+          return name.includes("male") && (name.includes("google") || name.includes("natural") || name.includes("david"));
+        } else {
+          return !name.includes("male") && (name.includes("google") || name.includes("natural") || name.includes("samantha") || name.includes("zira"));
+        }
+      });
+
+      if (!selectedVoice) {
         selectedVoice = langVoices.find(v => {
           const name = v.name.toLowerCase();
-          return name.includes("male") || name.includes("david") || name.includes("ravi") || name.includes("george") || name.includes("daniel") || name.includes("rishi") || name.includes("end-local");
-        });
-      } else {
-        // Find female voice
-        selectedVoice = langVoices.find(v => {
-          const name = v.name.toLowerCase();
-          // Exclude male keyword, look for female signals
-          if (name.includes("male")) return false;
-          return name.includes("female") || name.includes("zira") || name.includes("samantha") || name.includes("heera") || name.includes("hazel") || name.includes("haruka") || name.includes("karen") || name.includes("moira") || name.includes("tessa") || name.includes("veena") || name.includes("google us english") || name.includes("ene-local") || name.includes("hie-local");
+          if (preferredGender === "male") {
+            return name.includes("male") || name.includes("david") || name.includes("ravi") || name.includes("george") || name.includes("daniel") || name.includes("rishi");
+          } else {
+            if (name.includes("male")) return false;
+            return name.includes("female") || name.includes("zira") || name.includes("samantha") || name.includes("heera") || name.includes("hazel") || name.includes("haruka") || name.includes("karen") || name.includes("moira") || name.includes("tessa") || name.includes("veena");
+          }
         });
       }
-      
-      // Fallback to any English/Hindi voice if the specific gender voice is not found
+
       if (!selectedVoice && langVoices.length > 0) {
         selectedVoice = langVoices[0];
       }
@@ -230,18 +234,25 @@ function Home() {
         const voices = window.speechSynthesis.getVoices();
         const langVoices = voices.filter(v => v.lang.includes("en-US") || v.lang.includes("en-IN") || v.lang.includes("hi-IN"));
         const preferredGender = userdata?.assistantVoice || "female";
-        let selectedVoice = null;
         
-        if (preferredGender === "male") {
+        let selectedVoice = langVoices.find(v => {
+          const name = v.name.toLowerCase();
+          if (preferredGender === "male") {
+            return name.includes("male") && (name.includes("google") || name.includes("natural") || name.includes("david"));
+          } else {
+            return !name.includes("male") && (name.includes("google") || name.includes("natural") || name.includes("samantha") || name.includes("zira"));
+          }
+        });
+
+        if (!selectedVoice) {
           selectedVoice = langVoices.find(v => {
             const name = v.name.toLowerCase();
-            return name.includes("male") || name.includes("david") || name.includes("ravi") || name.includes("george") || name.includes("daniel") || name.includes("rishi") || name.includes("end-local");
-          });
-        } else {
-          selectedVoice = langVoices.find(v => {
-            const name = v.name.toLowerCase();
-            if (name.includes("male")) return false;
-            return name.includes("female") || name.includes("zira") || name.includes("samantha") || name.includes("heera") || name.includes("hazel") || name.includes("haruka") || name.includes("karen") || name.includes("moira") || name.includes("tessa") || name.includes("veena") || name.includes("google us english") || name.includes("ene-local") || name.includes("hie-local");
+            if (preferredGender === "male") {
+              return name.includes("male") || name.includes("david") || name.includes("ravi") || name.includes("george") || name.includes("daniel") || name.includes("rishi");
+            } else {
+              if (name.includes("male")) return false;
+              return name.includes("female") || name.includes("zira") || name.includes("samantha") || name.includes("heera") || name.includes("hazel") || name.includes("haruka") || name.includes("karen") || name.includes("moira") || name.includes("tessa") || name.includes("veena");
+            }
           });
         }
         
