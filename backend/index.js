@@ -44,7 +44,7 @@ app.get("/",async(req,res)=>
 {
   try {
     let prompt=req.query.prompt;
-    let customPrompt = `${prompt}. Answer in extremely simple, plain, and easy-to-understand language. Keep it conversational and concise.`;
+    let customPrompt = `${prompt}. Answer in extremely simple, plain, and easy-to-understand language. Keep it conversational and limit your response to exactly 3 lines.`;
     let data=await GeminiResponse(customPrompt);
 
     let answer = "I couldn't fetch an answer right now.";
