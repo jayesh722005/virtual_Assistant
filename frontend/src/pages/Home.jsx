@@ -258,10 +258,31 @@ function Home() {
         lowerText.includes("let code") || 
         lowerText.includes("leadcode")
       ) {
-        window.open("https://leetcode.com/problems/random-one-question/all", "_blank");
-        speakText("Opening a random LeetCode question for you.");
+        const query = lowerText
+          .replace("please", "")
+          .replace("open", "")
+          .replace("question", "")
+          .replace("on leetcode", "")
+          .replace("on leet code", "")
+          .replace("leetcode", "")
+          .replace("leet code", "")
+          .replace("lead code", "")
+          .replace("let code", "")
+          .replace("leadcode", "")
+          .replace("specific", "")
+          .trim();
+
+        if (query) {
+          const searchUrl = `https://www.google.com/search?q=leetcode+${encodeURIComponent(query)}&btnI`;
+          window.open(searchUrl, "_blank");
+          speakText(`Opening LeetCode question: ${query}`);
+        } else {
+          window.open("https://leetcode.com/problems/random-one-question/all", "_blank");
+          speakText("Opening a random LeetCode question for you.");
+        }
         return;
       }
+
 
 
       // Call context function to send prompt to Gemini & save in DB history
