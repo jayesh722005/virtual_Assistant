@@ -273,9 +273,9 @@ function Home() {
           .trim();
 
         if (query) {
-          const searchUrl = `https://www.google.com/search?q=leetcode+${encodeURIComponent(query)}&btnI`;
+          const searchUrl = `https://www.google.com/search?q=leetcode+${encodeURIComponent(query)}`;
           window.open(searchUrl, "_blank");
-          speakText(`Opening LeetCode question: ${query}`);
+          speakText(`Searching for LeetCode question: ${query}`);
         } else {
           window.open("https://leetcode.com/problems/random-one-question/all", "_blank");
           speakText("Opening a random LeetCode question for you.");
