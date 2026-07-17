@@ -62,7 +62,7 @@ function Home() {
   const hasGreeted = useRef(false);
   useEffect(() => {
     if (userdata && userdata.name && !hasGreeted.current) {
-      const greetingText = `Hello ${userdata.name}, what can I help you with?`;
+      const greetingText = `hello ${userdata.name} what can i help you`;
       speakText(greetingText);
       hasGreeted.current = true;
     }
