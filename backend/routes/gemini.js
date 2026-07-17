@@ -3,11 +3,16 @@ import axios from "axios"
 const fallbackResponses = {
   "hello": "Hello! How can I help you today?",
   "hi": "Hey there! What's on your mind?",
-  "who are you": "I am Jarvis, your virtual assistant. How can I help you today?",
-  "how are you": "I am doing great, thank you! How can I help you?",
+  "who are you": "I am Jarvis, your virtual assistant.",
+  "how are you": "I am doing great, thank you!",
   "javascript": "JavaScript is a programming language used to make websites interactive.",
+  "java script": "JavaScript is a programming language used to make websites interactive.",
+  "js": "JavaScript is a programming language used to make websites interactive.",
   "typescript": "TypeScript is a typed superset of JavaScript that compiles to plain JavaScript.",
+  "type script": "TypeScript is a typed superset of JavaScript that compiles to plain JavaScript.",
+  "ts": "TypeScript is a typed superset of JavaScript that compiles to plain JavaScript.",
   "mongodb": "MongoDB is a document-based NoSQL database used for high-volume data storage.",
+  "mongo": "MongoDB is a document-based NoSQL database used for high-volume data storage.",
   "react": "React is a JavaScript library for building user interfaces.",
   "node": "Node.js is a runtime that lets you run JavaScript code on the server."
 };

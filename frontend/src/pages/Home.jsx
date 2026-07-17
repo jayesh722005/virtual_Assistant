@@ -611,6 +611,9 @@ function Home() {
             <div className="chat-display-card" style={{ maxHeight: '350px', overflowY: 'auto' }}>
               {chatHistory.map((chat, idx) => {
                 if (chat.sender === 'user') return null; // Do not show user's question
+                if (chat.text.toLowerCase().startsWith("error") || chat.text.toLowerCase().includes("failed")) {
+                  return null; // Do not show error messages
+                }
                 return (
                   <div 
                     key={idx} 
