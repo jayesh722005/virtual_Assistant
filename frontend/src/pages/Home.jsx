@@ -170,6 +170,35 @@ function Home() {
 
     recognition.onresult = async (event) => {
       const speechToText = event.results[0][0].transcript;
+      const lowerText = speechToText.toLowerCase();
+
+      // YouTube Voice Command Handling
+      if (lowerText.includes("youtube")) {
+        let searchUrl = "https://www.youtube.com";
+        let speechReply = "Opening YouTube for you.";
+        
+        if (lowerText.includes("play") || lowerText.includes("search") || lowerText.includes("open")) {
+          const query = lowerText
+            .replace("please", "")
+            .replace("open", "")
+            .replace("play", "")
+            .replace("search", "")
+            .replace("any", "")
+            .replace("video", "")
+            .replace("on youtube", "")
+            .replace("youtube", "")
+            .trim();
+          
+          if (query) {
+            searchUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(query)}`;
+            speechReply = `Searching for ${query} on YouTube.`;
+          }
+        }
+        
+        window.open(searchUrl, "_blank");
+        speakText(speechReply);
+        return;
+      }
 
       // Call context function to send prompt to Gemini & save in DB history
       setIsResponding(true);
