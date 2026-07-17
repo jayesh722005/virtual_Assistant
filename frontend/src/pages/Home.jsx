@@ -50,6 +50,16 @@ function Home() {
     }
   }, [userdata?.history, isResponding]);
 
+  // Greeting on mount
+  const hasGreeted = useRef(false);
+  useEffect(() => {
+    if (userdata && userdata.name && !hasGreeted.current) {
+      const greetingText = `Hello ${userdata.name}, what can I help you with?`;
+      speakText(greetingText);
+      hasGreeted.current = true;
+    }
+  }, [userdata]);
+
   // Text to Speech
   const speakText = (text, idx = null) => {
     if ("speechSynthesis" in window) {
