@@ -5,17 +5,45 @@ const fallbackResponses = {
   "hi": "Hey there! What's on your mind?",
   "who are you": "I am Jarvis, your virtual assistant.",
   "how are you": "I am doing great, thank you!",
-  "javascript": "JavaScript is a programming language used to make websites interactive.",
-  "java script": "JavaScript is a programming language used to make websites interactive.",
-  "js": "JavaScript is a programming language used to make websites interactive.",
-  "typescript": "TypeScript is a typed superset of JavaScript that compiles to plain JavaScript.",
-  "type script": "TypeScript is a typed superset of JavaScript that compiles to plain JavaScript.",
-  "ts": "TypeScript is a typed superset of JavaScript that compiles to plain JavaScript.",
-  "mongodb": "MongoDB is a document-based NoSQL database used for high-volume data storage.",
-  "mongo": "MongoDB is a document-based NoSQL database used for high-volume data storage.",
-  "react": "React is a JavaScript library for building user interfaces.",
-  "node": "Node.js is a runtime that lets you run JavaScript code on the server."
+  "your name": "I am Jarvis, your virtual assistant.",
+  "creator": "I was created by Jayesh.",
+  "created you": "I was created by Jayesh.",
+  "joke": "Why don't scientists trust atoms? Because they make up everything!"
 };
+
+const getCleanQuery = (prompt) => {
+  let q = prompt.toLowerCase();
+  if (q.includes("answer in extremely simple")) {
+     q = q.split(".")[0]; // take only the first sentence
+  }
+  q = q.replace("what is", "")
+       .replace("who is", "")
+       .replace("tell me about", "")
+       .replace("define", "")
+       .replace("explain", "")
+       .trim();
+  if (q.endsWith("?")) {
+     q = q.slice(0, -1);
+  }
+  return q.trim();
+};
+
+const queryDuckDuckGo = async (query) => {
+    try {
+        const url = `https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json`;
+        const res = await axios.get(url, { headers: { 'User-Agent': 'Mozilla/5.0' } });
+        if (res.data.AbstractText) {
+            return res.data.AbstractText;
+        }
+        if (res.data.RelatedTopics && res.data.RelatedTopics.length > 0 && res.data.RelatedTopics[0].Text) {
+            return res.data.RelatedTopics[0].Text;
+        }
+        return null;
+    } catch (e) {
+        console.error("DuckDuckGo fetch failed:", e.message);
+        return null;
+    }
+}
 
 const GeminiResponse = async (prompt) => {
     try {
@@ -32,10 +60,11 @@ const GeminiResponse = async (prompt) => {
         return result.data;
     }
     catch (error) {
-        console.error("Gemini API call failed. Falling back to local offline mock. Error message:", error.message);
+        console.error("Gemini API call failed. Falling back to keyless local/DuckDuckGo responder. Error message:", error.message);
         
-        // Find best match in fallback responses
         const cleanPrompt = prompt.toLowerCase();
+        
+        // 1. Try matching local conversational keywords
         for (const [key, value] of Object.entries(fallbackResponses)) {
             if (cleanPrompt.includes(key)) {
                 return {
@@ -48,11 +77,28 @@ const GeminiResponse = async (prompt) => {
             }
         }
         
-        // Default backup reply if no keyword matches
+        // 2. Try fetching from DuckDuckGo Instant Answer API (No API key needed!)
+        const cleanQuery = getCleanQuery(prompt);
+        if (cleanQuery) {
+            const searchAnswer = await queryDuckDuckGo(cleanQuery);
+            if (searchAnswer) {
+                // Return only the first sentence of the search answer to keep it 1-line and conversational
+                const oneLineAnswer = searchAnswer.split(".")[0] + ".";
+                return {
+                    candidates: [{
+                        content: {
+                            parts: [{ text: oneLineAnswer }]
+                        }
+                    }]
+                };
+            }
+        }
+        
+        // 3. Last resort fallback
         return {
             candidates: [{
                 content: {
-                    parts: [{ text: "Google's servers are overloaded right now. Ask me about JavaScript, TypeScript, or MongoDB!" }]
+                    parts: [{ text: "Google's servers are busy right now. Ask me any factual question!" }]
                 }
             }]
         };

@@ -250,6 +250,13 @@ function Home() {
         }
       }
 
+      // 6. LeetCode Command
+      if (lowerText.includes("leetcode")) {
+        window.open("https://leetcode.com/problems/random-one-question/all", "_blank");
+        speakText("Opening a random LeetCode question for you.");
+        return;
+      }
+
       // Call context function to send prompt to Gemini & save in DB history
       setIsResponding(true);
       try {
