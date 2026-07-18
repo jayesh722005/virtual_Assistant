@@ -186,7 +186,25 @@ function Home() {
         return;
       }
 
-      // 3. Google Search Command
+      // 3. Weather Command
+      if (lowerText.includes("weather") || lowerText.includes("temperature")) {
+        let city = lowerText
+          .replace("what is the", "")
+          .replace("weather in", "")
+          .replace("weather of", "")
+          .replace("temperature in", "")
+          .replace("temperature of", "")
+          .replace("weather", "")
+          .replace("temperature", "")
+          .trim();
+        
+        const searchQuery = city ? `weather in ${city}` : "weather";
+        window.open(`https://www.google.com/search?q=${encodeURIComponent(searchQuery)}`, "_blank");
+        speakText(city ? `Showing weather for ${city} on Google.` : "Showing the weather on Google.");
+        return;
+      }
+
+      // 4. Google Search Command
       if (lowerText.includes("search") && lowerText.includes("google")) {
         const query = lowerText
           .replace("please", "")
@@ -399,7 +417,23 @@ function Home() {
   };
 
   const handleExportChat = (format) => {
-    if (!chatHistory || chatHistory.length === 0) {
+    // Filter out error messages (and their preceding user question if it resulted in an error)
+    const filteredHistory = [];
+    for (let i = 0; i < chatHistory.length; i++) {
+      const chat = chatHistory[i];
+      const isError = chat.sender === "assistant" && (chat.text.toLowerCase().startsWith("error") || chat.text.toLowerCase().includes("failed"));
+      if (isError) {
+        // If the current assistant message is an error, exclude it.
+        // Also remove the preceding user message if it exists, to avoid a dangling user prompt.
+        if (filteredHistory.length > 0 && filteredHistory[filteredHistory.length - 1].sender === "user") {
+          filteredHistory.pop();
+        }
+      } else {
+        filteredHistory.push(chat);
+      }
+    }
+
+    if (!filteredHistory || filteredHistory.length === 0) {
       alert("No chat history to export!");
       return;
     }
@@ -409,7 +443,7 @@ function Home() {
     let fileName = `chat_history_${Date.now()}`;
 
     if (format === "json") {
-      fileContent = JSON.stringify(chatHistory, null, 2);
+      fileContent = JSON.stringify(filteredHistory, null, 2);
       mimeType = "application/json";
       fileName += ".json";
     } else if (format === "markdown") {
@@ -417,7 +451,7 @@ function Home() {
       fileContent += `**User:** ${userdata?.name || "User"}\n`;
       fileContent += `**Date:** ${new Date().toLocaleString()}\n\n`;
       fileContent += `---\n\n`;
-      chatHistory.forEach((chat) => {
+      filteredHistory.forEach((chat) => {
         const senderLabel = chat.sender === "user" ? "You" : assistantName;
         fileContent += `### **${senderLabel}**\n${chat.text}\n\n`;
       });
@@ -428,7 +462,7 @@ function Home() {
       fileContent += `User: ${userdata?.name || "User"}\n`;
       fileContent += `Date: ${new Date().toLocaleString()}\n\n`;
       fileContent += `========================================\n\n`;
-      chatHistory.forEach((chat) => {
+      filteredHistory.forEach((chat) => {
         const senderLabel = chat.sender === "user" ? "You" : assistantName;
         fileContent += `${senderLabel}:\n${chat.text}\n\n`;
       });
@@ -495,7 +529,7 @@ function Home() {
               <strong>Date:</strong> ${new Date().toLocaleString()}
             </div>
             <hr style="border: 0; border-top: 1px solid #ccc; margin-bottom: 20px;" />
-            ${chatHistory.map((chat) => {
+            ${filteredHistory.map((chat) => {
               const senderLabel = chat.sender === "user" ? "You" : assistantName;
               const typeClass = chat.sender === "user" ? "user" : "assistant";
               return `

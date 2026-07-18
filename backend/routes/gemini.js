@@ -60,13 +60,16 @@ const GeminiResponse = async (prompt) => {
         return result.data;
     }
     catch (error) {
-        console.error("Gemini API call failed. Falling back to keyless local/DuckDuckGo responder. Error message:", error.message);
-        
         const cleanPrompt = prompt.toLowerCase();
         
         // 1. Try matching local conversational keywords
+        let basePrompt = cleanPrompt;
+        if (basePrompt.includes("answer in extremely simple")) {
+            basePrompt = basePrompt.split(".")[0]; // Extract only the actual question
+        }
+        
         for (const [key, value] of Object.entries(fallbackResponses)) {
-            if (cleanPrompt.includes(key)) {
+            if (basePrompt.includes(key)) {
                 return {
                     candidates: [{
                         content: {
